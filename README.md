@@ -19,6 +19,22 @@ Timer 1 used for Servos
 
 Timer 2 set to 500Hz for regular weight monitoring
 
+## Dependancies
+- Servo
+- HX711
+
+### How to install
+
+#### Command Line
+```bash
+arduino-cli lib install servo HX711
+```
+
+#### Graphical User Interface(GUI)
+Follow [this tutorial](https://docs.arduino.cc/software/ide-v2/tutorials/ide-v2-installing-a-library)
+Search for both the Servo and HX711 libraries and install them
+
+
 ## Datasheet
 [ATmega328P](https://docs.arduino.cc/resources/datasheets/Atmel-42735-8-bit-AVR-Microcontroller-ATmega328-328P_Datasheet.pdf)
 

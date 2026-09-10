@@ -1,5 +1,5 @@
 #include <Servo.h>
-#include "HX711.h"
+#include <HX711.h>
 
 const int LOAD1_DOUT_PIN = 2;
 const int LOAD1_SCK_PIN = 3;
