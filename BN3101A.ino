@@ -12,7 +12,10 @@ const int SERVO1 = 9;
 const int SERVO2 = 10;
 
 const float cal_weight = 3.06f;
+const float MIN_BAG_THRESHOLD = 0.1f;
+const float ABNORMAL_FLOW_THRESHOLD = 1.f;
 
+Servo clamp[2];
 HX711 scale[2], out;
 char active = 0;
 
@@ -67,9 +70,13 @@ ISR(TIMER2_COMPA_vect) {
 }
 
 void setup() {
-  scale[0].begin(LOADCELL_DOUT_PIN, LOADCELL_SCK_PIN);
-  scale[1].begin(LOADCELL_DOUT_PIN, LOADCELL_SCK_PIN);
-  out.begin(LOADCELL_DOUT_PIN, LOADCELL_SCK_PIN);
+
+  clamp[0].attach(SERVO1);
+  clamp[1].attach(SERVO2);
+
+  scale[0].begin(LOAD1_DOUT_PIN, LOAD1_SCK_PIN);
+  scale[1].begin(LOAD2_DOUT_PIN, LOAD2_SCK_PIN);
+  out.begin(LOAD3_DOUT_PIN, LOAD3_SCK_PIN);
   // Ensure scale is ready and calibrated before starting operation
   scale[0].set_scale();
   scale[0].tare();
