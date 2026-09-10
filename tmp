@@ -1,0 +1,33 @@
+
+void interruptSetup() {
+  TCCR2A = 0x02;          // Disable PWM and use CTC mode
+  TCCR2B = 0x07;          // Prescaler clkIO/128
+  #if F_CPU == 16000000L  // if using 16MHz crystal
+    OCR2A = 0xF9;         // Set count to 249 for 2ms int
+  #elif F_CPU == 8000000L // if using 8MHz crystal
+    OCR2A = 0x7C;         // Set count to 124 for 2ms int
+  #endif
+  TIMSK2 = 0x02;          // Enable Output Compare A Match int
+  sei();
+}
+
+ISR(TIMER2_COMPA_vect) {
+  cli();
+  Serial.println("Compare running");
+  sei();
+}
+
+void setup() {
+  interruptSetup();
+  Serial.begin(9600);
+  Serial.print("Crystal Clock: ");
+  #if F_CPU == 16000000L  // if using 16MHz crystal
+    Serial.println("16MHz");
+  #elif F_CPU == 8000000L // if using 8MHz crystal
+    Serial.println("8MHz");
+  #endif
+}
+
+void loop() {
+
+}
