@@ -11,7 +11,7 @@ const int LOAD3_SCK_PIN = 7;
 const int SERVO1 = 9;
 const int SERVO2 = 10;
 
-const float cal_weight = 3.06f;
+const float cal_weight = 0.520f;
 const float MIN_BAG_THRESHOLD = 0.1f;
 const float ABNORMAL_FLOW_THRESHOLD = 1.f;
 
@@ -21,10 +21,11 @@ char active = 0;
 
 struct warning_flag {
 	uint32_t bag1_done : 1,
+           bag1_half_done : 1,
            bag2_half_done : 1,
            bag2_done : 1,
            abnormal_flow : 1,
-           unused : 28;
+           unused : 27;
 } flag;
 
 // Setup interrupt for Timer 2
@@ -70,38 +71,46 @@ ISR(TIMER2_COMPA_vect) {
 }
 
 void setup() {
-
   clamp[0].attach(SERVO1);
-  clamp[1].attach(SERVO2);
+  clamp[0].write(175);
+  delay(15);
+  clamp[0].write(175);
+  delay(15);
+
+  //clamp[1].attach(SERVO2);
+
+  Serial.begin(9600);
 
   scale[0].begin(LOAD1_DOUT_PIN, LOAD1_SCK_PIN);
-  scale[1].begin(LOAD2_DOUT_PIN, LOAD2_SCK_PIN);
-  out.begin(LOAD3_DOUT_PIN, LOAD3_SCK_PIN);
-  // Ensure scale is ready and calibrated before starting operation
   scale[0].set_scale();
-  scale[0].tare();
-  scale[1].set_scale();
-  scale[1].tare();
 
   float cal1 = scale[0].get_units(10);
-  float cal2 = scale[1].get_units(10);
-  // The nurses will place 3.06kg bags on the cell
   scale[0].set_scale(cal1/cal_weight);
-  scale[1].set_scale(cal2/cal_weight);
-  // Now our scale should be roughly calibrated for kg measurements
   scale[0].tare();
-  scale[1].tare();
 
   float w1 = scale[0].get_units(10);
-  float w2 = scale[1].get_units(10);
-
-  if( w1 < (cal_weight - 0.1f) ) {
-    active = 1;
-  }
-
-  interruptSetup2();
+  //clamp[0].write(135);
+  //delay(15);
 }
 
 void loop() {
+  float w = scale[active].get_units(10);
 
+  if(w < -MIN_BAG_THRESHOLD) {
+    clamp[0].write(125);
+  }else {
+    clamp[0].write(175);
+  }
+  //float wout = out.get_units(10);
+
+  // Since 2ms is the interval we can easily calculate flow
+  //float v = w/0.002f;
+  //float vout = wout/0.002f;
+
+  Serial.print("Weight = ");
+  Serial.print(w);
+  Serial.print(", ");
+  Serial.print(-MIN_BAG_THRESHOLD);
+  Serial.print(", ");
+  Serial.println(w <-MIN_BAG_THRESHOLD);
 }
